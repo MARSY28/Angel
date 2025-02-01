@@ -3,15 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MARSY Assistant</title>
+    <title>Ангел | Твой персональный ассистент</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        :root {
+            --primary-color: var(--tg-theme-button-color, #3390ec);
+            --text-color: var(--tg-theme-text-color, #000);
+            --bg-color: var(--tg-theme-bg-color, #fff);
+            --secondary-bg: var(--tg-theme-secondary-bg-color, #f5f5f5);
+            --hint-color: var(--tg-theme-hint-color, #999);
+            --link-color: var(--tg-theme-link-color, #3390ec);
+            --button-text: var(--tg-theme-button-text-color, #fff);
+            --border-radius: 16px;
+            --padding: 16px;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
-            padding: 16px;
-            color: var(--tg-theme-text-color, #000);
-            background: var(--tg-theme-bg-color, #fff);
+            padding: var(--padding);
+            color: var(--text-color);
+            background: var(--bg-color);
+            line-height: 1.5;
         }
 
         .container {
@@ -22,101 +35,232 @@
         .header {
             text-align: center;
             margin-bottom: 24px;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            background: var(--secondary-bg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(to right, var(--primary-color), transparent);
         }
 
         .header h1 {
-            font-size: 24px;
+            font-size: 28px;
             margin: 0;
-            color: var(--tg-theme-text-color, #000);
+            background: linear-gradient(45deg, var(--primary-color), var(--link-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .card {
-            background: var(--tg-theme-secondary-bg-color, #f5f5f5);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 16px;
+        .header p {
+            margin: 8px 0 0;
+            color: var(--hint-color);
+            font-size: 16px;
         }
 
-        .card h2 {
-            margin: 0 0 8px 0;
-            font-size: 18px;
-            color: var(--tg-theme-text-color, #000);
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
         }
 
-        .card p {
-            margin: 0;
-            color: var(--tg-theme-hint-color, #666);
-            font-size: 14px;
-        }
-
-        .button {
-            background: var(--tg-theme-button-color, #2481cc);
-            color: var(--tg-theme-button-text-color, #fff);
+        .action-button {
+            background: var(--secondary-bg);
             border: none;
-            border-radius: 8px;
-            padding: 12px 20px;
-            font-size: 14px;
-            font-weight: 500;
+            padding: 16px;
+            border-radius: var(--border-radius);
+            color: var(--text-color);
+            font-size: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
             cursor: pointer;
-            width: 100%;
-            margin-bottom: 8px;
+            transition: all 0.3s ease;
         }
 
-        .button:hover {
-            opacity: 0.9;
+        .action-button:active {
+            transform: scale(0.98);
+        }
+
+        .action-button i {
+            font-size: 24px;
+            color: var(--primary-color);
+        }
+
+        .status-card {
+            background: var(--secondary-bg);
+            border-radius: var(--border-radius);
+            padding: var(--padding);
+            margin-bottom: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .status-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary-color);
+        }
+
+        .status-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0 0 8px 0;
+            color: var(--text-color);
+        }
+
+        .status-content {
+            color: var(--hint-color);
+            font-size: 14px;
+        }
+
+        .voice-input {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            border: none;
+            color: var(--button-text);
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .voice-input:active {
+            transform: scale(0.95);
+        }
+
+        @media (max-width: 480px) {
+            :root {
+                --padding: 12px;
+            }
+            
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>MARSY Assistant</h1>
+            <h1>Ангел</h1>
+            <p>Твой персональный ассистент</p>
         </div>
 
-        <div class="card">
-            <h2>Новости и обновления</h2>
-            <p>Будьте в курсе последних событий и новостей</p>
-            <button class="button" onclick="showNews()">Открыть новости</button>
+        <div class="quick-actions">
+            <button class="action-button" onclick="quickAction('mood')">
+                <i class="fas fa-heart"></i>
+                Настроение
+            </button>
+            <button class="action-button" onclick="quickAction('tasks')">
+                <i class="fas fa-tasks"></i>
+                Задачи
+            </button>
+            <button class="action-button" onclick="quickAction('music')">
+                <i class="fas fa-music"></i>
+                Музыка
+            </button>
+            <button class="action-button" onclick="quickAction('settings')">
+                <i class="fas fa-cog"></i>
+                Настройки
+            </button>
         </div>
 
-        <div class="card">
-            <h2>Персональные рекомендации</h2>
-            <p>Получайте рекомендации на основе ваших интересов</p>
-            <button class="button" onclick="showRecommendations()">Посмотреть рекомендации</button>
+        <div class="status-card" id="moodCard">
+            <h3 class="status-title">Текущее настроение</h3>
+            <p class="status-content">Анализирую ваше настроение...</p>
         </div>
 
-        <div class="card">
-            <h2>Управление расписанием</h2>
-            <p>Планируйте свое время эффективно</p>
-            <button class="button" onclick="showSchedule()">Открыть расписание</button>
+        <div class="status-card" id="tasksCard">
+            <h3 class="status-title">Активные задачи</h3>
+            <p class="status-content">Загрузка задач...</p>
         </div>
+
+        <div class="status-card" id="recommendationsCard">
+            <h3 class="status-title">Рекомендации</h3>
+            <p class="status-content">Подготавливаю персональные рекомендации...</p>
+        </div>
+
+        <button class="voice-input" onclick="startVoiceInput()">
+            <i class="fas fa-microphone"></i>
+        </button>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
-        tg.ready();
 
-        function showNews() {
-            tg.sendData(JSON.stringify({action: 'news'}));
+        // Инициализация темы
+        function updateTheme() {
+            document.documentElement.style.setProperty('--primary-color', tg.themeParams.button_color || '#3390ec');
+            document.documentElement.style.setProperty('--text-color', tg.themeParams.text_color || '#000');
+            document.documentElement.style.setProperty('--bg-color', tg.themeParams.bg_color || '#fff');
+            document.documentElement.style.setProperty('--secondary-bg', tg.themeParams.secondary_bg_color || '#f5f5f5');
+            document.documentElement.style.setProperty('--hint-color', tg.themeParams.hint_color || '#999');
+            document.documentElement.style.setProperty('--link-color', tg.themeParams.link_color || '#3390ec');
+            document.documentElement.style.setProperty('--button-text', tg.themeParams.button_text_color || '#fff');
         }
 
-        function showRecommendations() {
-            tg.sendData(JSON.stringify({action: 'recommendations'}));
+        // Обработчики действий
+        function quickAction(type) {
+            switch(type) {
+                case 'mood':
+                    tg.sendData(JSON.stringify({action: 'mood_analysis'}));
+                    break;
+                case 'tasks':
+                    tg.sendData(JSON.stringify({action: 'show_tasks'}));
+                    break;
+                case 'music':
+                    tg.sendData(JSON.stringify({action: 'music_recommendations'}));
+                    break;
+                case 'settings':
+                    tg.sendData(JSON.stringify({action: 'open_settings'}));
+                    break;
+            }
         }
 
-        function showSchedule() {
-            tg.sendData(JSON.stringify({action: 'schedule'}));
+        function startVoiceInput() {
+            tg.sendData(JSON.stringify({action: 'voice_input'}));
         }
 
-        // Подстраиваем тему под Telegram
-        tg.onEvent('themeChanged', function() {
-            document.documentElement.style.setProperty('--tg-theme-bg-color', tg.themeParams.bg_color);
-            document.documentElement.style.setProperty('--tg-theme-text-color', tg.themeParams.text_color);
-            document.documentElement.style.setProperty('--tg-theme-hint-color', tg.themeParams.hint_color);
-            document.documentElement.style.setProperty('--tg-theme-button-color', tg.themeParams.button_color);
-            document.documentElement.style.setProperty('--tg-theme-button-text-color', tg.themeParams.button_text_color);
+        function updateStatus(cardId, message) {
+            const card = document.getElementById(cardId);
+            if (card) {
+                card.querySelector('.status-content').textContent = message;
+            }
+        }
+
+        // Обработчики событий Telegram
+        tg.onEvent('themeChanged', updateTheme);
+        tg.onEvent('viewportChanged', function() {
+            tg.expand();
         });
+
+        // Инициализация
+        updateTheme();
     </script>
 </body>
 </html>
